@@ -1,8 +1,10 @@
 #include <iostream>
+#include "coder.h"
 
 int main()
 {
-    std::cout << "Hello zip!\n";
+    zip_maker::Coder coder("/home/xemerius/devs/zip_file_maker/src/sample.txt");
+
 
     return 0;
 }
