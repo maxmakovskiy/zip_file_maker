@@ -43,6 +43,7 @@ public:
     void Assign(std::vector<tree_ptr> free);
 
     void Traverse() const;
+    tree_ptr ExtractLeaf();
 
 private:
     tree_ptr root_ = nullptr;    
@@ -52,7 +53,8 @@ private:
     
 };
 
-void tree_traversal(const tree_ptr& node);
+void tree_traversal(const tree_ptr& node, int depth);
+tree_ptr tree_traversal(tree_ptr& node);
 
 } 
 #endif
