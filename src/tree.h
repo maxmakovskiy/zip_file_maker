@@ -13,9 +13,13 @@ namespace zip_maker {
 
 struct TreeNode 
 {
+    using TreePtr = std::unique_ptr<TreeNode>;
+
+    TreeNode() = default;
+
     TreeNode(size_t w, const std::string& phr, 
-            std::unique_ptr<TreeNode> l = nullptr,
-            std::unique_ptr<TreeNode> r = nullptr)
+            TreePtr l = nullptr,
+            TreePtr r = nullptr)
         : weight(w)
         , phrase(phr)
         , left0(std::move(l))
@@ -27,8 +31,8 @@ struct TreeNode
 
     size_t weight = 0;
     std::string phrase;
-    std::unique_ptr<TreeNode> left0 = nullptr;
-    std::unique_ptr<TreeNode> right1 = nullptr;
+    TreePtr left0 = nullptr;
+    TreePtr right1 = nullptr;
 };
 
 typedef std::unique_ptr<TreeNode> tree_ptr;
@@ -36,8 +40,6 @@ typedef std::unique_ptr<TreeNode> tree_ptr;
 class Tree
 {
 public:
-    Tree() = default;
-
     void Assign(std::vector<tree_ptr> free);
 
     void Traverse() const;

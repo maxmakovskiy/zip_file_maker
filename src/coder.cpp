@@ -11,20 +11,27 @@ Coder::Coder
     }
 
     processFile();
+    tree.Traverse();
 }
 
 
 void
 Coder::processFile()
 {
-    std::unordered_map<char, size_t> freq;
-    char c;
-    while (file_ >> std::noskipws >> c) {
-        freq[c]++;       
+    for(std::string temp; std::getline(file_, temp); )
+    {
+        for (char c : temp) { charFreq_[c]++; }
     }
-    
-    std::for_each(freq.begin(), freq.end(),
-            [&](auto& p) { charFreq_.insert({p.second, p.first}); });
+   
+    std::vector<tree_ptr> freeNodes;
+    std::for_each(charFreq_.begin(), charFreq_.end(),
+            [&](auto& p) {
+                freeNodes.push_back(
+                    std::make_unique<TreeNode>(
+                            p.second, std::string(1u, p.first)));
+            });
+
+    tree.Assign(std::move(freeNodes));
 }
 
 }

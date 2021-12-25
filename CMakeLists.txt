@@ -12,6 +12,7 @@ set(CMAKE_CSS_FLAGS_RELEASE "-O2")
 
 add_library(zip_maker_lib STATIC
     src/coder.cpp
+    src/tree.cpp
 )
 
 add_executable(main

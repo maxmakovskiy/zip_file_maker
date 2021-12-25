@@ -52,8 +52,7 @@ void tree_traversal(const tree_ptr& node)
 {
     if (!node) return;
 
-    std::cout << "(weight: " << node->weight << "; "
-              << "phrase: '" << node->phrase << "')" << std::endl;
+    std::cout << "phrase: '" << node->phrase << "'" << std::endl;
 
     tree_traversal(node->left0);
     tree_traversal(node->right1);
