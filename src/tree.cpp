@@ -117,7 +117,8 @@ void
 tree_traversal_delete
 (tree_ptr& node, const std::string& target)
 {
-/* // Some printf-like debugging style 
+/*
+ // Some printf-like debugging style 
     auto nodeSnapshot = [](const tree_ptr& node) {
         std::cout << "============= NODE: " << node->phrase << '\n'
           << "Weight: " << std::to_string(node->weight) << '\n'
