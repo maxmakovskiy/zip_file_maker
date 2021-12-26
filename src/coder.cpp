@@ -11,7 +11,14 @@ Coder::Coder
     }
 
     processFile();
-    tree.Traverse();
+   
+    for (size_t i = 0; i < charFreq_.size(); i++) 
+    {
+        auto temp = tree.ExtractLeaf();
+        std::cout << "(" << temp.first << ";"
+            << temp.second << ")" << std::endl;
+    }
+
 }
 
 

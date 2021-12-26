@@ -64,36 +64,84 @@ Tree::Assign
 void
 Tree::Traverse() const
 {
-    tree_traversal(root_, 0);
+    tree_traversal_print(root_, 0);
 }
 
-tree_ptr
+std::pair<std::string, std::string>
 Tree::ExtractLeaf() 
 {
-    return tree_traversal(root_);
+    auto temp = root_.get();
+    std::string code;
+    while (temp != nullptr)
+    {
+        if (temp->phrase.size() == 1) {
+            break;
+        }
+
+        if (temp->left0 != nullptr) {
+            code += '0';
+            temp = temp->left0.get();
+        } else {
+            code += '1';
+            temp = temp->right1.get();
+        }
+    }
+    
+    std::string copyString(temp->phrase);
+    deleteLeaf(temp->phrase);
+    return std::make_pair(copyString, code);
 }
 
 // for printf-like visual debug
-void tree_traversal(const tree_ptr& node, int depth)
+void
+tree_traversal_print
+(const tree_ptr& node, int depth)
 {
     if (!node) return;
 
     std::cout << "depth: " << depth << "; ";
     std::cout << "phrase: '" << node->phrase << "'" << std::endl;
 
-    tree_traversal(node->left0, depth + 1);
-    tree_traversal(node->right1, depth + 1);
+    tree_traversal_print(node->left0, depth + 1);
+    tree_traversal_print(node->right1, depth + 1);
 }
 
-tree_ptr tree_traversal(tree_ptr& node)
+void
+Tree::deleteLeaf
+(const std::string& target)
 {
-    if (node->phrase.size() == 1) return std::move(node);
-
-    tree_traversal(node->left0);
-    tree_traversal(node->right1);
-
-    return nullptr;
+    tree_traversal_delete(root_, target);
 }
+
+void
+tree_traversal_delete
+(tree_ptr& node, const std::string& target)
+{
+/* // Some printf-like debugging style 
+    auto nodeSnapshot = [](const tree_ptr& node) {
+        std::cout << "============= NODE: " << node->phrase << '\n'
+          << "Weight: " << std::to_string(node->weight) << '\n'
+          << "Right child: " << (node->right1 ? 
+                  (node->right1->phrase) : "nullptr") << '\n'
+          << "Left child: " << (node->left0 ? 
+                  (node->left0->phrase) : "nullptr")
+          << std::endl;
+    };
+*/
+
+    if (!node) return;
+
+//    nodeSnapshot(node);
+    if (node->phrase == target) {
+        auto toDel = std::move(node);
+        return;
+    }
+
+    tree_traversal_delete(node->left0, target);
+    tree_traversal_delete(node->right1, target);
+
+}
+
 
 }
 

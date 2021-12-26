@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 #include <iostream>
 
@@ -43,18 +44,20 @@ public:
     void Assign(std::vector<tree_ptr> free);
 
     void Traverse() const;
-    tree_ptr ExtractLeaf();
+    std::pair<std::string,std::string> ExtractLeaf();
 
 private:
     tree_ptr root_ = nullptr;    
     std::vector<tree_ptr> pool_;
 
     void buildTree();
-    
+    void deleteLeaf(const std::string& target);
+
 };
 
-void tree_traversal(const tree_ptr& node, int depth);
-tree_ptr tree_traversal(tree_ptr& node);
+void tree_traversal_print(const tree_ptr& node, int depth);
+void tree_traversal_delete(tree_ptr& node,
+        const std::string& target);
 
 } 
 #endif
