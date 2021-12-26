@@ -1,4 +1,2 @@
 TODOs:
-- make encoding table by Haffman tree
-- traverse through file and use enconding table for code content
 - make decoder
