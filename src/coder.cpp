@@ -11,53 +11,50 @@ Coder::Coder
     }
 
     processFile();
-    fillCoderTable();   
+    fillCoderTable();
 }
 
-CoderTable
-Coder::GetCoderTable() const
-{
-    return coderTable_;
-}
-
-void 
+void
 Coder::fillCoderTable()
 {
-    for (size_t i = 0; i < charFreq_.size(); i++) 
+    for (const auto symbol : charFreq_)
     {
-        auto temp = tree.ExtractLeaf();
-//        coderTable_[temp.first[0]] = toUInt(temp.second);
-        coderTable_[temp.first[0]] = temp.second;
+        tree.FindMatch(symbol.first);
     }
 }
 
 void
 Coder::Encode(std::ostream& os) 
 {
-    for(std::string temp; std::getline(file_, temp); )
+    auto coderTable = tree.GetCoderTable();
+    char c;
+    while(file_ >> std::noskipws >> c)
     {
-        for (char c : temp) { 
-            os << coderTable_[c] << "|";
-        }
+        std::byte b = static_cast<std::byte>(c);
+        os << coderTable[b];
     }
 }
 
 void
 Coder::processFile()
 {
-    for(std::string temp; std::getline(file_, temp); )
-    {
-        for (char c : temp) { charFreq_[c]++; }
-    }
+    std::for_each(std::istreambuf_iterator<char>(file_),
+        std::istreambuf_iterator<char>(),
+        [&](const char c) {
+            std::byte b = static_cast<std::byte>(c);
+            charFreq_[b]++;
+        }
+    );
+
     file_.clear();
     file_.seekg(0);
 
-    std::vector<tree_ptr> freeNodes;
+    std::vector<TreePtr> freeNodes;
     std::for_each(charFreq_.begin(), charFreq_.end(),
             [&](auto& p) {
                 freeNodes.push_back(
-                    std::make_unique<TreeNode>(
-                            p.second, std::string(1u, p.first)));
+                    std::make_shared<TreeNode>(
+                            p.second, std::vector(1u, p.first)));
             });
 
     tree.Assign(std::move(freeNodes));
@@ -86,8 +83,18 @@ print_coder_table
     std::cout << "======== CoderTable =========\n";
     for (const auto& [symbol, bin] : table)
     {
-        std::cout << symbol << " - " << bin << '\n';
+        std::cout << std::hex << std::showbase << int(symbol)
+                  << " - " << bin << '\n';
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const Code& codes)
+{
+    std::for_each(codes.begin(), codes.end(),
+                  [&](uint8_t bit){
+                      os << bit;
+                  });
+    return os;
 }
 
 }

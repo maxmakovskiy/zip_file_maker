@@ -14,8 +14,6 @@
 
 namespace zip_maker {
 
-//using CoderTable = std::unordered_map<char, size_t>;
-using CoderTable = std::unordered_map<char, std::string>;
 
 class Coder
 {
@@ -26,8 +24,7 @@ public:
 
 private:
     std::ifstream file_;
-    std::unordered_map<char, size_t> charFreq_;
-    CoderTable coderTable_;
+    std::unordered_map<std::byte, size_t> charFreq_;
     
     Tree tree;
 
@@ -37,6 +34,7 @@ private:
 
 size_t to_uint(const std::string& binary);
 void print_coder_table(const CoderTable& table);
+std::ostream& operator<<(std::ostream& os, const Code& codes);
 
 }
 
