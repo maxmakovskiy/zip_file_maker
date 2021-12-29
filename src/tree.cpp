@@ -25,39 +25,43 @@ Tree::buildTree()
     };
 */
 
-    auto lessTreeNode = [] (const auto& n1,
-            const auto& n2) {
-        return n1->weight < n2->weight; 
+    auto glewSymbols = [](const Symbols& lhs,
+            const Symbols& rhs)
+    {
+        Symbols res(lhs);
+        res.insert(res.end(), rhs.begin(), rhs.end());
+        return res;
     };
 
-    while (pool_.size() > 1) {
-        auto target1It = std::min_element(pool_.begin(),
-                pool_.end(), lessTreeNode);
-        tree_ptr target1 = std::move(*target1It);
-        pool_.erase(target1It);
+    while (pool_.size() > 1)
+    {
+        TreePtr target1 = pool_.top();
+        pool_.pop();
+        TreePtr target2 = pool_.top();
+        pool_.pop();
        
-        auto target2It = std::min_element(pool_.begin(),
-                pool_.end(), lessTreeNode);
-        tree_ptr target2 = std::move(*target2It);
-        pool_.erase(target2It);
-        
-        tree_ptr parent = std::make_unique<TreeNode>(
+        auto newNode = std::make_shared<TreeNode>(
                 target1->weight + target2->weight,
-                std::string(target1->phrase + target2->phrase),
-                std::move(target1),
-                std::move(target2));
+                glewSymbols(target1->phrase, target2->phrase),
+                target1,
+                target2);
 
-        pool_.push_back(std::move(parent));
+        pool_.push(newNode);
     }
 
-    root_ = std::move(pool_.front());
+    root_ = pool_.top();
+    pool_.pop();
 }
 
 void
 Tree::Assign
-(std::vector<tree_ptr> free)
+(const std::vector<TreePtr>& pool)
 {
-    pool_ = std::move(free);
+    std::for_each(pool.begin(), pool.end(),
+                  [&](TreePtr item){
+                    pool_.push(item);
+                  });
+
     buildTree();
 }
 
@@ -67,35 +71,42 @@ Tree::Traverse() const
     tree_traversal_print(root_, 0);
 }
 
-std::pair<std::string, std::string>
+/*
+Leaf
 Tree::ExtractLeaf() 
 {
-    auto temp = root_.get();
-    std::string code;
-    while (temp != nullptr)
-    {
-        if (temp->phrase.size() == 1) {
-            break;
-        }
+    TreePtr trailing = nullptr;
+    TreePtr traverser = root_;
+    Code code;
 
-        if (temp->left0 != nullptr) {
-            code += '0';
-            temp = temp->left0.get();
+//    while(traverser->left0 != nullptr
+//          || traverser->right1 != nullptr)
+    while(traverser->phrase.size() != 1)
+    {
+        trailing = traverser;
+        if (traverser->left0 != nullptr) {
+            code.push_back(0);
+            traverser = traverser->left0;
         } else {
-            code += '1';
-            temp = temp->right1.get();
+            code.push_back(1);
+            traverser = traverser->right1;
         }
     }
-    
-    std::string copyString(temp->phrase);
-    deleteLeaf(temp->phrase);
-    return std::make_pair(copyString, code);
+
+    if (trailing->left0 == traverser) {
+        trailing->left0 = nullptr;
+    } else {
+        trailing->right1 = nullptr;
+    }
+
+    return Leaf{std::move(traverser->phrase), std::move(code)};
 }
+*/
 
 // for printf-like visual debug
 void
 tree_traversal_print
-(const tree_ptr& node, int depth)
+(const TreePtr& node, int depth)
 {
     if (!node) return;
 
@@ -106,43 +117,63 @@ tree_traversal_print
     tree_traversal_print(node->right1, depth + 1);
 }
 
-void
-Tree::deleteLeaf
-(const std::string& target)
+std::ostream&
+operator<<
+(std::ostream& os, const Symbols& bytes)
 {
-    tree_traversal_delete(root_, target);
+    std::for_each(bytes.begin(),
+                  bytes.end(),
+                  [&](std::byte item){
+                    os << static_cast<char>(item);
+                  });
+
+    return os;
 }
 
 void
-tree_traversal_delete
-(tree_ptr& node, const std::string& target)
+Tree::FindMatch
+(std::byte target)
 {
-/*
- // Some printf-like debugging style 
-    auto nodeSnapshot = [](const tree_ptr& node) {
-        std::cout << "============= NODE: " << node->phrase << '\n'
-          << "Weight: " << std::to_string(node->weight) << '\n'
-          << "Right child: " << (node->right1 ? 
-                  (node->right1->phrase) : "nullptr") << '\n'
-          << "Left child: " << (node->left0 ? 
-                  (node->left0->phrase) : "nullptr")
-          << std::endl;
-    };
-*/
+    Code code;
+    treeTraverse(root_, target, code);
+}
 
+
+void
+Tree::treeTraverse
+(const TreePtr& node, std::byte target, Code& code)
+{
     if (!node) return;
-
-//    nodeSnapshot(node);
-    if (node->phrase == target) {
-        auto toDel = std::move(node);
+    if (node->phrase.size() == 1 &&
+        node->phrase.front() == target)
+    {
+        coderTable_[target] = code;
+/*
+        std::cout << "Target: " << std::to_string(static_cast<uint8_t>(target)) << "; Code: ";
+        for(uint8_t item : code) {
+            std::cout << static_cast<uint32_t>(item);
+        }
+        std::cout << std::endl;
+*/
         return;
     }
+    else
+    {
+        code.push_back(0);
+        treeTraverse(node->left0, target, code);
+        code.pop_back();
 
-    tree_traversal_delete(node->left0, target);
-    tree_traversal_delete(node->right1, target);
-
+        code.push_back(1);
+        treeTraverse(node->right1, target, code);
+        code.pop_back();
+    }
 }
 
+CoderTable
+Tree::GetCoderTable() const
+{
+    return coderTable_;
+}
 
 }
 
