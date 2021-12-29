@@ -7,10 +7,10 @@ int main()
     std::ostringstream oss;
     zip_maker::Coder coder(
             "/home/xemerius/devs/zip_file_maker/src/sample.txt");
+//            "/home/xemerius/devs/zip_file_maker/src/image.jpg");
     
     coder.Encode(oss);
-    zip_maker::print_coder_table(coder.GetCoderTable());
-    std::cout << "RESULT: " << oss.str() << std::endl;
+    std::cout << oss.str() << std::endl;
 
     return 0;
 }
