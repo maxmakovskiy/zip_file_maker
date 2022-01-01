@@ -3,13 +3,9 @@
 namespace zip_maker {
 
 Coder::Coder
-(const std::string& filename)
-    : file_(filename, std::ios::binary)
+(std::istream& input)
+    : inputStream_(input)
 {
-    if (!file_.is_open()) {
-        throw std::invalid_argument("Can't open file " + filename);
-    }
-
     processFile();
     fillCoderTable();
 }
@@ -19,26 +15,31 @@ Coder::fillCoderTable()
 {
     for (const auto symbol : charFreq_)
     {
-        tree.FindMatch(symbol.first);
+        tree_.FindMatch(symbol.first);
     }
 }
 
 void
 Coder::Encode(std::ostream& os) 
 {
-    auto coderTable = tree.GetCoderTable();
-    char c;
-    while(file_ >> std::noskipws >> c)
+    CoderTable coderTable = tree_.GetCoderTable();
+
+    char buffer;
+    while (inputStream_ >> std::noskipws >> buffer)
     {
-        std::byte b = static_cast<std::byte>(c);
-        os << coderTable[b];
+        std::byte b = static_cast<std::byte>(buffer);
+        Code code = coderTable[b];
+        std::for_each(code.begin(), code.end(),
+                      [&](uint8_t digit){
+                        os << digit;
+                      });
     }
 }
 
 void
 Coder::processFile()
 {
-    std::for_each(std::istreambuf_iterator<char>(file_),
+    std::for_each(std::istreambuf_iterator<char>(inputStream_),
         std::istreambuf_iterator<char>(),
         [&](const char c) {
             std::byte b = static_cast<std::byte>(c);
@@ -46,8 +47,8 @@ Coder::processFile()
         }
     );
 
-    file_.clear();
-    file_.seekg(0);
+    inputStream_.clear();
+    inputStream_.seekg(0);
 
     std::vector<TreePtr> freeNodes;
     std::for_each(charFreq_.begin(), charFreq_.end(),
@@ -57,7 +58,7 @@ Coder::processFile()
                             p.second, std::vector(1u, p.first)));
             });
 
-    tree.Assign(std::move(freeNodes));
+    tree_.Assign(std::move(freeNodes));
 }
 
 size_t toUInt(const std::string& binary)

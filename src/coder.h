@@ -10,23 +10,27 @@
 #include <memory>
 #include <cmath>
 #include <iostream>
+//#include <boost/dynamic_bitset.hpp>
 #include "tree.h"
 
 namespace zip_maker {
 
+using CharFreqTable = std::unordered_map<std::byte, size_t>;
+
+struct EncodedDataSegmentSize;
+struct CoderTableSegmentSize;
+struct LayoutSize;
 
 class Coder
 {
 public:
-    explicit Coder(const std::string& filename);
+    explicit Coder(std::istream& input);
     void Encode(std::ostream& os);
-    CoderTable GetCoderTable() const;
 
 private:
-    std::ifstream file_;
-    std::unordered_map<std::byte, size_t> charFreq_;
-    
-    Tree tree;
+    std::istream& inputStream_;
+    CharFreqTable charFreq_;
+    Tree tree_;
 
     void processFile();
     void fillCoderTable();
@@ -35,6 +39,7 @@ private:
 size_t to_uint(const std::string& binary);
 void print_coder_table(const CoderTable& table);
 std::ostream& operator<<(std::ostream& os, const Code& codes);
+
 
 }
 

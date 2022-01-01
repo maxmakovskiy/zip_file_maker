@@ -5,27 +5,7 @@ namespace zip_maker {
 void
 Tree::buildTree()
 {
-/* Some fancy stuff for printf-like debug - because
- * gdb doesn't allow to look up inside unique_ptr
-
-    auto poolSnapshot = [](const std::string& stage, 
-            const std::vector<tree_ptr>& cont) {
-        std::cout << "== " << stage << " =================\n";
-        std::for_each(cont.begin(), cont.end(), 
-                [](const tree_ptr& el) {
-                    std::cout << "weight: " << el->weight << "; "
-                        << "phrase: " << el->phrase << std::endl;
-                });
-    };
-    
-    auto ptrSnapshot = [] (const tree_ptr& p1,
-            const tree_ptr& p2) {
-        std::cout << "it1: (" << p1->phrase << "); "
-            << "it2: (" << p2->phrase << ")\n";
-    };
-*/
-
-    auto glewSymbols = [](const Symbols& lhs,
+   auto glewSymbols = [](const Symbols& lhs,
             const Symbols& rhs)
     {
         Symbols res(lhs);
@@ -71,39 +51,6 @@ Tree::Traverse() const
     tree_traversal_print(root_, 0);
 }
 
-/*
-Leaf
-Tree::ExtractLeaf() 
-{
-    TreePtr trailing = nullptr;
-    TreePtr traverser = root_;
-    Code code;
-
-//    while(traverser->left0 != nullptr
-//          || traverser->right1 != nullptr)
-    while(traverser->phrase.size() != 1)
-    {
-        trailing = traverser;
-        if (traverser->left0 != nullptr) {
-            code.push_back(0);
-            traverser = traverser->left0;
-        } else {
-            code.push_back(1);
-            traverser = traverser->right1;
-        }
-    }
-
-    if (trailing->left0 == traverser) {
-        trailing->left0 = nullptr;
-    } else {
-        trailing->right1 = nullptr;
-    }
-
-    return Leaf{std::move(traverser->phrase), std::move(code)};
-}
-*/
-
-// for printf-like visual debug
 void
 tree_traversal_print
 (const TreePtr& node, int depth)
