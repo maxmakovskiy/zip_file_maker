@@ -1,17 +1,12 @@
-#include <iostream>
-#include <sstream>
-#include "coder.h"
+#include <QApplication>
+#include "zipper_window.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    std::istringstream iss;
-    iss.str("abcdaba");
-    std::ostringstream oss;
-    zip_maker::Coder coder(iss);
-    
-    coder.Encode(oss);
-    std::cout << oss.str() << std::endl;
+    QApplication app(argc, argv);
+    ZipperWindow* wind = new ZipperWindow;
+    wind->show();
 
-    return 0;
+    return app.exec();
 }
 
