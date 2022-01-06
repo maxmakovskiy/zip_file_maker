@@ -1,5 +1,9 @@
 #include "zipper_window.h"
 
+#include <iostream>
+#include <sstream>
+#include "coder.h"
+
 #include <QLabel>
 #include <QTextEdit>
 #include <QPushButton>
@@ -35,6 +39,9 @@ ZipperWindow::ZipperWindow(QWidget* parent)
 // --- SETUP SLOTS AND SIGNALS ------------------------------------
     connect(inputEdit, SIGNAL(textChanged()), this, SLOT(enableProcessingButton()));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(compressButton, SIGNAL(clicked()), this, SLOT(compressButtonClicked()));
+    connect(cleanupButton, SIGNAL(clicked()), this, SLOT(cleanupButtonClicked()));
+
 // ----------------------------------------------------------------
 
 // --- SETUP LAYOUTS ----------------------------------------------
@@ -73,24 +80,30 @@ ZipperWindow::ZipperWindow(QWidget* parent)
 
 void ZipperWindow::enableProcessingButton()
 {
-    if (inputEdit->toPlainText().isEmpty()) return;
-
     compressButton->setEnabled(true);
     cleanupButton->setEnabled(true);
-
 }
 
-void ZipperWindow::on_compressButton_clicked()
+void ZipperWindow::compressButtonClicked()
 {
+    QString content = inputEdit->toPlainText();
 
-
+    std::istringstream iss;
+    iss.str(content.toStdString());
+    std::ostringstream oss;
+    zip_maker::Coder coder(iss);
+    coder.Encode(oss);
+    compressedEdit->setPlainText(QString::fromStdString(oss.str()));
 }
 
-void ZipperWindow::on_cleanupButton_clicked()
+void ZipperWindow::cleanupButtonClicked()
 {
     inputEdit->clear();
     asciiEdit->clear();
     compressedEdit->clear();
+
+    compressButton->setEnabled(false);
+    cleanupButton->setEnabled(false);
 }
 
 

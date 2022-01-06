@@ -17,8 +17,8 @@ public:
 
 private slots:
     void enableProcessingButton();
-    void on_compressButton_clicked();
-    void on_cleanupButton_clicked();
+    void compressButtonClicked();
+    void cleanupButtonClicked();
 
 private:
     QLabel* inputLabel;
