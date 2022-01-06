@@ -2,7 +2,6 @@
 #define ZIP_MAKER_CODER_H_
 
 #include <string>
-#include <exception>
 #include <fstream>
 #include <map>
 #include <unordered_map>
@@ -10,16 +9,11 @@
 #include <memory>
 #include <cmath>
 #include <iostream>
-//#include <boost/dynamic_bitset.hpp>
 #include "tree.h"
 
 namespace zip_maker {
 
 using CharFreqTable = std::unordered_map<std::byte, size_t>;
-
-struct EncodedDataSegmentSize;
-struct CoderTableSegmentSize;
-struct LayoutSize;
 
 class Coder
 {
@@ -32,7 +26,7 @@ private:
     CharFreqTable charFreq_;
     Tree tree_;
 
-    void processFile();
+    void processInput();
     void fillCoderTable();
 };
 
