@@ -14,9 +14,9 @@ ZipperWindow::ZipperWindow(QWidget* parent)
     : QWidget(parent)
 {
 // --- UI blocks --------------------------------------------------
-    inputLabel = new QLabel("Input text:");
-    asciiLabel = new QLabel("Non-compressed output:");
-    compressedLabel = new QLabel("Compressed output:");
+    inputLabel = new QLabel(INPUT_LABEL + " {0}");
+    asciiLabel = new QLabel(ASCII_LABEL + " {0}");
+    compressedLabel = new QLabel(COMPRESSED_LABEL + " {0}");
 
     inputEdit = new QTextEdit;
 
@@ -95,9 +95,13 @@ void ZipperWindow::compressButtonClicked()
     zip_maker::Coder coder(iss);
     coder.Encode(oss);
 
-    compressedEdit->setPlainText(QString::fromStdString(oss.str()));
-    asciiEdit->setPlainText(QString::fromStdString(
-                                zip_maker::textToBinary(strForLib)));
+    QString result = QString::fromStdString(oss.str());
+    QString asciiStr = QString::fromStdString(zip_maker::textToBinary(strForLib));
+    compressedEdit->setPlainText(result);
+    asciiEdit->setPlainText(asciiStr);
+
+    asciiLabel->setText(ASCII_LABEL + " {" + QString::number(asciiStr.size()) + "}");
+    compressedLabel->setText(COMPRESSED_LABEL + " {" + QString::number(result.size()) + "}");
 }
 
 void ZipperWindow::cleanupButtonClicked()
@@ -108,6 +112,10 @@ void ZipperWindow::cleanupButtonClicked()
 
     compressButton->setEnabled(false);
     cleanupButton->setEnabled(false);
+
+    inputLabel->setText(INPUT_LABEL + " {0}");
+    asciiLabel->setText(ASCII_LABEL + " {0}");
+    compressedLabel->setText(COMPRESSED_LABEL + " {0}");
 }
 
 

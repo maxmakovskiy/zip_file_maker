@@ -31,6 +31,10 @@ private:
     QPushButton* cleanupButton;
     QPushButton* closeButton;
 
+    const QString INPUT_LABEL = "Input text:";
+    const QString ASCII_LABEL = "Non-compressed output:";
+    const QString COMPRESSED_LABEL = "Compressed output:";
+
 };
 
 #endif
