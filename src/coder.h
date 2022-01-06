@@ -33,7 +33,7 @@ private:
 size_t to_uint(const std::string& binary);
 void print_coder_table(const CoderTable& table);
 std::ostream& operator<<(std::ostream& os, const Code& codes);
-
+std::string textToBinary(const std::string& source);
 
 }
 

@@ -87,13 +87,17 @@ void ZipperWindow::enableProcessingButton()
 void ZipperWindow::compressButtonClicked()
 {
     QString content = inputEdit->toPlainText();
+    std::string strForLib = content.toStdString();
 
     std::istringstream iss;
-    iss.str(content.toStdString());
+    iss.str(strForLib);
     std::ostringstream oss;
     zip_maker::Coder coder(iss);
     coder.Encode(oss);
+
     compressedEdit->setPlainText(QString::fromStdString(oss.str()));
+    asciiEdit->setPlainText(QString::fromStdString(
+                                zip_maker::textToBinary(strForLib)));
 }
 
 void ZipperWindow::cleanupButtonClicked()

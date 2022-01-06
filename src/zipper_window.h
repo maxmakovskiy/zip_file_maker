@@ -31,7 +31,6 @@ private:
     QPushButton* cleanupButton;
     QPushButton* closeButton;
 
-
 };
 
 #endif

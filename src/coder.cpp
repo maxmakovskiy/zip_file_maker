@@ -1,4 +1,5 @@
 #include "coder.h"
+#include <bitset>
 
 namespace zip_maker {
 
@@ -93,6 +94,20 @@ std::ostream& operator<<(std::ostream& os, const Code& codes)
                       os << std::to_string(bit);
                   });
     return os;
+}
+
+std::string textToBinary(const std::string& source)
+{
+    using ull = long long unsigned int;
+    std::string output;
+
+    for (char c : source)
+    {
+        auto bits = std::bitset<8>{static_cast<ull>(c)};
+        output.append(std::move(bits.to_string()));
+    }
+
+    return output;
 }
 
 }
